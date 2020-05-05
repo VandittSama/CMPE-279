@@ -1,3 +1,4 @@
+
 // Server side C/C++ program to demonstrate Socket programming 
 #include <unistd.h> 
 #include <stdio.h> 
@@ -5,7 +6,7 @@
 #include <stdlib.h> 
 #include <netinet/in.h> 
 #include <string.h> 
-#define PORT 8080 
+#define PORT 80 
 int main(int argc, char const *argv[]) 
 { 
     int server_fd, new_socket, valread; 
@@ -40,6 +41,14 @@ int main(int argc, char const *argv[])
         perror("bind failed"); 
         exit(EXIT_FAILURE); 
     } 
+
+	//Start of changes by Vanditt
+	if(fork() == 0){
+	setuid(65534);
+	printf("Fork Successful, child process ID set to: %d\n", getuid());
+	}
+	//End of changes by Vanditt
+	
     if (listen(server_fd, 3) < 0) 
     { 
         perror("listen"); 
