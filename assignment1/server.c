@@ -45,11 +45,8 @@ int main(int argc, char const *argv[])
 	//Start of changes by Vanditt
 	if(fork() == 0){
 	setuid(65534);
-	printf("Fork Successful, child process ID set to: %d\n", getuid());
-	}
-	//End of changes by Vanditt
-	
-    if (listen(server_fd, 3) < 0) 
+	printf("Fork Successful, child process user ID set to: %d\n", getuid());
+	if (listen(server_fd, 3) < 0) 
     { 
         perror("listen"); 
         exit(EXIT_FAILURE); 
@@ -65,4 +62,9 @@ int main(int argc, char const *argv[])
     send(new_socket , hello , strlen(hello) , 0 ); 
     printf("Hello message sent\n"); 
     return 0; 
+    }
+
+return 0;
+	
+ 
 } 
