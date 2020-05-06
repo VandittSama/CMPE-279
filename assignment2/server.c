@@ -17,7 +17,7 @@ int main(int argc, char const *argv[])
     char *hello = "Hello from server";
 	//printf("ARGC = %ls", &argc);
     if(argc > 1){
-	printf("We are in the exec-ed process \n");
+	printf("We are in the exec-ed process. PID = %d, UID = %d\n", getpid(),getuid());
 	server_fd = atoi(argv[1]);  //reading the argument passed in exec
 	if (listen(server_fd, 3) < 0) { 
         		perror("listen"); 
@@ -31,9 +31,10 @@ int main(int argc, char const *argv[])
     		valread = read( new_socket , buffer, 1024); 
     		printf("%s\n",buffer ); 
     		send(new_socket , hello , strlen(hello) , 0 ); 
-    		printf("Hello message sent\n"); 
-    		return 0;
+    		printf("Hello message sent back from PID = %d\n", getpid()); 
+    		exit(0);
     } 
+	printf("We are in the parent process. PID = %d, UID = %d\n", getpid(), getuid());
     // Creating socket file descriptor 
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) 
     { 
@@ -62,11 +63,16 @@ int main(int argc, char const *argv[])
 
 	//Start of changes by Vanditt
 	if(fork() == 0){
-		setuid(65534);
-		printf("Fork Successful, child process user ID set to: %d \n", getuid());
-		char server_param[11];
-		sprintf(server_param, "%d", server_fd);
-		execv("./server.o", (char*[]){"./server.", server_param, NULL});
+		printf("Fork Successful! Child UID = %d\n", getuid());
+		if(setuid(65534) == 0){
+			printf("Child process user ID set to: %d \n", getuid());
+			char server_param[11];
+			sprintf(server_param, "%d", server_fd);
+			execv("./server.o", (char*[]){"./server.", server_param, NULL});
+			printf("Exec failed!!");   //This code should never run
+		}else{
+			printf("Set UID Failed");	
+		}
     	}
 
 	return 0;
